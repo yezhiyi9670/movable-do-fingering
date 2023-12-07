@@ -17,7 +17,7 @@ import MuseScore 3.0
 
 MuseScore {
     version: "1.4"
-    description: "This plugin inserts movable do texts as derived from the given tonality"
+    description: "This plugin inserts movable do note names derived from the given tonality"
     menuPath: "Plugins.Movable Do Fingering"
 
     // MuseScore 3/4 compat
