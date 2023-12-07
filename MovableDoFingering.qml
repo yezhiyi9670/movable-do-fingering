@@ -1,5 +1,5 @@
 //=============================================================================
-//  MuseScore Movable Do Annotation Plugin
+//  MuseScore Movable Do Fingering Plugin
 //
 //  Copyright (C) 2023 yezhiyi9670
 //  based on the following code by Nozomu Yamazaki
@@ -17,14 +17,14 @@ import MuseScore 3.0
 
 MuseScore {
     version: "1.4"
-    description: "This plugin inserts movable do texts derived from the given tonality"
-    menuPath: "Plugins.Movable Do"
+    description: "This plugin inserts movable do texts as derived from the given tonality"
+    menuPath: "Plugins.Movable Do Fingering"
 
     // MuseScore 3/4 compat
     Component.onCompleted: {
         if (mscoreMajorVersion >= 4) {
-            title = "Movable Do Annotation"
-            thumbnailName = "movable-do-annotation.png"
+            title = "Movable Do Fingering"
+            thumbnailName = "MovableDoFingering.png"
             categoryCode = "composing-arranging-tools"
         }
     }
@@ -34,6 +34,9 @@ MuseScore {
 
     // Small note name size is fraction of the full font size.
     property real fontSizeMini: 0.7
+    
+    // Element type to create
+    property real elementType: Element.FINGERING
 
     function nameChord(notes, text, small, movableDoOffset, notationIndex) {
         var tpcToTonalPitch= {
@@ -158,8 +161,7 @@ MuseScore {
 
                 // If we consume a STAFF_TEXT we must manufacture a new one.
                 if (text.text)
-                    text = newElement(
-                                Element.STAFF_TEXT) // Make another STAFF_TEXT
+                    text = newElement(elementType) // Make another STAFF_TEXT
             }
         }
         return text
@@ -206,7 +208,7 @@ MuseScore {
                 while (cursor.segment && (fullScore || cursor.tick < endTick)) {
                     if (cursor.element
                             && cursor.element.type === Element.CHORD) {
-                        var text = newElement(Element.STAFF_TEXT)
+                        var text = newElement(elementType)
                         // Make a STAFF_TEXT
 
                         // First...we need to scan grace notes for existence and break them
@@ -249,8 +251,7 @@ MuseScore {
                         }
 
                         if (text.text)
-                            text = newElement(
-                                        Element.STAFF_TEXT) // Make another STAFF_TEXT object
+                            text = newElement(elementType) // Make another STAFF_TEXT object
 
                         // Finally process trailing grace notes if they exist...
                         text = renderGraceNoteNames(cursor, trailingFifo,
@@ -274,12 +275,12 @@ MuseScore {
     }
     
     onRun: {
-        console.log("Running Movable Do")
-    } // end onRun
+        tonalityDialog.visible = true
+    }
 
     Dialog {
         id: tonalityDialog
-        visible: true
+        visible: false  // prevent dialog flashing by on initialization
         title: qsTr("Movable Do")
         width: form.width
         height: form.height
@@ -302,21 +303,21 @@ MuseScore {
                     ComboBox {
                         id: tonality
                         model: [
-                            "-7 C♭/a♭",
-                            "-6 G♭/e♭",
-                            "-5 D♭/b♭",
-                            "-4 A♭/f",
-                            "-3 E♭/c",
-                            "-2 B♭/g",
-                            "-1 F/d",
-                            "0 C/a",
-                            "+1 G/e",
-                            "+2 D/b",
-                            "+3 A/f♯",
-                            "+4 E/c♯",
-                            "+5 B/g♯",
+                            "+7 C♯/a♯",
                             "+6 F♯/d♯",
-                            "+7 C♯/a♯"
+                            "+5 B/g♯",
+                            "+4 E/c♯",
+                            "+3 A/f♯",
+                            "+2 D/b",
+                            "+1 G/e",
+                            "0 C/a",
+                            "-1 F/d",
+                            "-2 B♭/g",
+                            "-3 E♭/c",
+                            "-4 A♭/f",
+                            "-5 D♭/b♭",
+                            "-6 G♭/e♭",
+                            "-7 C♭/a♭",
                         ]
                         currentIndex: 7
                     }
