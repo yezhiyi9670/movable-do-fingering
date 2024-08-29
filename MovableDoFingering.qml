@@ -8,17 +8,24 @@
 //  License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
 //=============================================================================
 
-import QtQuick 2.2
-import QtQuick.Controls 1.1
-import QtQuick.Layouts 1.1
-import QtQuick.Dialogs 1.2
+import QtQuick 2.1
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 
 import MuseScore 3.0
+import Muse.UiComponents 1.0
 
 MuseScore {
     version: "1.4"
     description: "This plugin inserts movable do note names derived from the given tonality"
     menuPath: "Plugins.Movable Do Fingering"
+    pluginType: "dialog"
+
+    // <MuseScore 4.4 Metadata>
+    title: "Movable Do Fingering"
+    thumbnailName: "MovableDoFingering.png"
+    categoryCode: "composing-arranging-tools"
+    // </MuseScore 4.4 Metadata>
 
     // MuseScore 3/4 compat
     Component.onCompleted: {
@@ -28,6 +35,7 @@ MuseScore {
             categoryCode = "composing-arranging-tools"
         }
     }
+
     function _quit() {
         (typeof(quit) === 'undefined' ? Qt.quit : quit)();
     }
@@ -275,32 +283,31 @@ MuseScore {
     }
     
     onRun: {
-        tonalityDialog.visible = true
+        
     }
 
-    Dialog {
-        id: tonalityDialog
-        visible: false  // prevent dialog flashing by on initialization
-        title: qsTr("Movable Do")
-        width: form.width
-        height: form.height
-        contentItem: Rectangle {
-            id: form
-            width: exporterColumn.width + 30
-            height: exporterColumn.height + 30
-            color: "lightgray"
-            ColumnLayout {
-                id: exporterColumn
-                width: 300
-                GridLayout {
-                    id: grid
-                    columns: 1
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    Label {
+    width: form.width
+    height: form.height
+
+    Item {
+        id: form
+        width: exporterColumn.width + 30
+        height: exporterColumn.height + 30
+        ColumnLayout {
+            id: exporterColumn
+            width: grid.width + 32
+            Column {
+                id: grid
+                spacing: 24
+                width: 180
+                anchors.fill: parent
+                anchors.margins: 16
+                Column {
+                    spacing: 12
+                    StyledTextLabel {
                         text: qsTr('Tonality')
                     }
-                    ComboBox {
+                    StyledDropdown {
                         id: tonality
                         model: [
                             "+7 C♯/a♯",
@@ -320,27 +327,35 @@ MuseScore {
                             "-7 C♭/a♭",
                         ]
                         currentIndex: 7
+                        onActivated: function(index, value) {
+                            currentIndex = index
+                        }
                     }
-                    Label {
+                }
+                Column {
+                    spacing: 12
+                    StyledTextLabel {
                         text: qsTr('Notation')
                     }
-                    ComboBox {
+                    StyledDropdown {
                         id: notation
                         model: ["Letters-vowel", "Letters", "Numeric"]
                         currentIndex: 1
-                    }
-                    Button {
-                        id: button
-                        text: qsTr("OK")
-                        onClicked: {
-                            curScore.startCmd()
-                            console.log(notation.currentIndex)
-                            nameNotesMovableDo(tonality.currentText,
-                                               notation.currentIndex)
-                            curScore.endCmd()
-                            tonalityDialog.visible = false
-                            _quit()
+                        onActivated: function(index, value) {
+                            currentIndex = index
                         }
+                    }
+                }
+                FlatButton {
+                    id: button
+                    text: qsTr("OK")
+                    onClicked: {
+                        curScore.startCmd()
+                        console.log(notation.currentIndex)
+                        nameNotesMovableDo(tonality.currentText,
+                                            notation.currentIndex)
+                        curScore.endCmd()
+                        _quit()
                     }
                 }
             }
