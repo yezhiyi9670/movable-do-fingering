@@ -322,7 +322,7 @@ MuseScore {
     Item {
         id: form
         width: exporterColumn.width + 30
-        height: exporterColumn.height + 30
+        height: exporterColumn.height + 24
         ColumnLayout {
             id: exporterColumn
             width: grid.width + 32
