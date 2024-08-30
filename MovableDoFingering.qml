@@ -12,6 +12,7 @@ import QtQuick 2.2
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
+import Qt.labs.settings 1.0
 
 import MuseScore 3.0
 
@@ -19,6 +20,7 @@ MuseScore {
     version: "1.4"
     description: "This plugin inserts movable do note names derived from the given tonality"
     menuPath: "Plugins.Movable Do Fingering"
+    pluginType: "dialog"
 
     // MuseScore 3/4 compat
     Component.onCompleted: {
@@ -273,30 +275,65 @@ MuseScore {
         // text.fontSize *= 1.5
         // cursor.add(text)
     }
+
+    function getElementTick(element) {
+        var segment = element;
+        while (segment.parent && segment.type != Element.SEGMENT) {
+            segment = segment.parent;
+        }
+        return segment.tick;
+    }
     
     onRun: {
-        tonalityDialog.visible = true
+        var keysig_potential = 0;
+
+        // == 1. Find position
+        var cursor = curScore.newCursor();
+        var selectedElement = null;
+        if(curScore.selection.isRange) {
+            cursor.rewind(Cursor.SELECTION_START); // Only works if selection is a range
+            selectedElement = cursor.element;
+        } else {
+            cursor.rewind(Cursor.SCORE_START);
+            for (var i in curScore.selection.elements) {
+                var element = curScore.selection.elements[i];
+                cursor.rewindToTick(getElementTick(element));
+                selectedElement = element;
+                break;
+            }
+        }
+        keysig_potential = cursor.keySignature;
+
+        // == 2. Make potential in range
+        while(keysig_potential < -7) {
+            keysig_potential += 12
+        }
+        while(keysig_potential > +7) {
+            keysig_potential -= 12
+        }
+
+        // == 3. Set index
+        tonality.currentIndex = 7 - keysig_potential
     }
 
-    Dialog {
-        id: tonalityDialog
-        visible: false  // prevent dialog flashing by on initialization
-        title: qsTr("Movable Do")
-        width: form.width
-        height: form.height
-        contentItem: Rectangle {
-            id: form
-            width: exporterColumn.width + 30
-            height: exporterColumn.height + 30
-            color: "lightgray"
-            ColumnLayout {
-                id: exporterColumn
-                width: 300
-                GridLayout {
-                    id: grid
-                    columns: 1
-                    anchors.fill: parent
-                    anchors.margins: 10
+    width: form.width
+    height: form.height
+    
+    Item {
+        id: form
+        width: exporterColumn.width + 30
+        height: exporterColumn.height + 30
+        ColumnLayout {
+            id: exporterColumn
+            width: grid.width + 32
+            Column {
+                id: grid
+                spacing: 24
+                width: 100
+                anchors.fill: parent
+                anchors.margins: 10
+                Column {
+                    spacing: 12                    
                     Label {
                         text: qsTr('Tonality')
                     }
@@ -321,6 +358,9 @@ MuseScore {
                         ]
                         currentIndex: 7
                     }
+                }
+                Column {
+                    spacing: 12
                     Label {
                         text: qsTr('Notation')
                     }
@@ -329,21 +369,26 @@ MuseScore {
                         model: ["Letters-vowel", "Letters", "Numeric"]
                         currentIndex: 1
                     }
-                    Button {
-                        id: button
-                        text: qsTr("OK")
-                        onClicked: {
-                            curScore.startCmd()
-                            console.log(notation.currentIndex)
-                            nameNotesMovableDo(tonality.currentText,
-                                               notation.currentIndex)
-                            curScore.endCmd()
-                            tonalityDialog.visible = false
-                            _quit()
-                        }
+                }
+                Button {
+                    id: button
+                    text: qsTr("OK")
+                    onClicked: {
+                        curScore.startCmd()
+                        console.log(notation.currentIndex)
+                        nameNotesMovableDo(tonality.currentText,
+                                            notation.currentIndex)
+                        curScore.endCmd()
+                        _quit()
                     }
                 }
             }
         }
     }
+
+    Settings {
+		id: settings
+		category: "MovableDoFingeringPlugin"
+		property alias notation:	notation.currentIndex
+	}
 }

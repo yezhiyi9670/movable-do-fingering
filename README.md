@@ -39,4 +39,6 @@ Notes on notation styles:
 - Translated text to English.
 - Added Letters and Numeric notation styles.
 - Reorganized the tonality menu for better readability.
+- When the plugin is run, it will also try to infer the tonality from the score.
+- The plugin will now persist the preferred notation format of the note names.
 - The note names are now added as **fingering texts** instead of staff texts. This is based on the fact that Movable Do note names are rarely used in circumstances that need fingering texts. Utilizing fingering texts also makes it easier to delete all existing note names and reapply them.
