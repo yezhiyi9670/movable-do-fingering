@@ -27,15 +27,6 @@ MuseScore {
     categoryCode: "composing-arranging-tools"
     // </MuseScore 4.4 Metadata>
 
-    // MuseScore 3/4 compat
-    Component.onCompleted: {
-        if (mscoreMajorVersion >= 4) {
-            title = "Movable Do Fingering"
-            thumbnailName = "MovableDoFingering.png"
-            categoryCode = "composing-arranging-tools"
-        }
-    }
-
     function _quit() {
         (typeof(quit) === 'undefined' ? Qt.quit : quit)();
     }
@@ -282,8 +273,44 @@ MuseScore {
         // cursor.add(text)
     }
     
+    function getElementTick(element) {
+        var segment = element;
+        while (segment.parent && segment.type != Element.SEGMENT) {
+            segment = segment.parent;
+        }
+        return segment.tick;
+    }
+
     onRun: {
-        
+        var keysig_potential = 0;
+
+        // == 1. Find position
+        var cursor = curScore.newCursor();
+        var selectedElement = null;
+        if(curScore.selection.isRange) {
+            cursor.rewind(Cursor.SELECTION_START); // Only works if selection is a range
+            selectedElement = cursor.element;
+        } else {
+            cursor.rewind(Cursor.SCORE_START);
+            for (var i in curScore.selection.elements) {
+                var element = curScore.selection.elements[i];
+                cursor.rewindToTick(getElementTick(element));
+                selectedElement = element;
+                break;
+            }
+        }
+        keysig_potential = cursor.keySignature;
+
+        // == 2. Make potential in range
+        while(keysig_potential < -7) {
+            keysig_potential += 12
+        }
+        while(keysig_potential > +7) {
+            keysig_potential -= 12
+        }
+
+        // == 3. Set index
+        tonality.currentIndex = 7 - keysig_potential
     }
 
     width: form.width
@@ -361,4 +388,10 @@ MuseScore {
             }
         }
     }
+
+    Settings {
+		id: settings
+		category: "MovableDoFingeringPlugin"
+		property alias notation:	notation.currentIndex
+	}
 }

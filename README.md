@@ -3,6 +3,8 @@
 <img align=right src="./MovableDoFingering.png" width=220px />
 
 > This is a [MuseScore](http://musescore.org/) plugin modified from [nozomu-y/MovableDo](https://github.com/nozomu-y/MovableDo), made to work with MuseScore 3 and 4.
+> 
+> ⚠️ **This branch works only on MuseScore 4.4 and above. If you use MuseScore ≤4.3, check the `main` branch.**
 
 When we play Piano, we usually read notes as C, D, E... and we also call them Do, Re, Mi... when try to sing the notes. However, in some circumstances, for example in some chorus, the name Do is not always mapped to C. Instead, it can be mapped to any note based on the tonality. For example, in E♭-major or c-minor tonality, Do is mappped to E♭, and La is mapped to C.
 
@@ -21,7 +23,7 @@ Note that the same qml file works in both MuseScore 3 and 4.
 
 The process of adding texts is not automatic. You need to run this plugin from the Plugin menu. In MuseScore 4, it is located in the Composing/Arranging Tools submenu. A prompt dialog will pop up.
 
-![Dialog](readme-assets/dialog.png)
+<img alt="Dialog" src="readme-assets/dialog.png" width=300 />
 
 Click `OK` to apply the texts. Note that this won't remove existing note name texts, so make sure to delete them before applying new ones.
 
@@ -33,8 +35,10 @@ Notes on notation styles:
 
 ## Changes compared to nozomu-y/MovableDo
 
-- Made to work with MuseScore 4.
+- Made to work with MuseScore 4.4 and above, with consistent UI styling.
 - Translated text to English.
 - Added Letters and Numeric notation styles.
 - Reorganized the tonality menu for better readability.
+- When the plugin is run, it will also try to infer the tonality from the score.
+- The plugin will now persist the preferred notation format of the note names.
 - The note names are now added as **fingering texts** instead of staff texts. This is based on the fact that Movable Do note names are rarely used in circumstances that need fingering texts. Utilizing fingering texts also makes it easier to delete all existing note names and reapply them.
