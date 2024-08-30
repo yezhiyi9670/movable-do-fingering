@@ -17,8 +17,6 @@ This plugin is similar to the built-in note-names plugin. Instead of the ABC nam
 1. Download the code and unzip it under the user's `Plugins` directory (check MuseScore preferences if you don't know where).
 2. Restart MuseScore, and you should be able to activate the plugin in the plugin manager.
 
-Note that the same qml file works in both MuseScore 3 and 4.
-
 ## Usage
 
 The process of adding texts is not automatic. You need to run this plugin from the Plugin menu. In MuseScore 4, it is located in the Composing/Arranging Tools submenu. A prompt dialog will pop up.
