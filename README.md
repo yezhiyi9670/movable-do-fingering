@@ -3,6 +3,8 @@
 <img align=right src="./MovableDoFingering.png" width=220px />
 
 > This is a [MuseScore](http://musescore.org/) plugin modified from [nozomu-y/MovableDo](https://github.com/nozomu-y/MovableDo), made to work with MuseScore 3 and 4.
+>
+> ⚠️ **This branch works only on MuseScore ≤4.3. Check the `mu4.4` branch for MuseScore 4.4 and above.**
 
 When we play Piano, we usually read notes as C, D, E... and we also call them Do, Re, Mi... when try to sing the notes. However, in some circumstances, for example in some chorus, the name Do is not always mapped to C. Instead, it can be mapped to any note based on the tonality. For example, in E♭-major or c-minor tonality, Do is mappped to E♭, and La is mapped to C.
 
